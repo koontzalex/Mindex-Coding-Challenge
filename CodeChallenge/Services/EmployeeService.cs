@@ -8,6 +8,12 @@ using CodeChallenge.Repositories;
 
 namespace CodeChallenge.Services
 {
+    public interface IEmployeeService
+    {
+        Employee GetById(String id);
+        Employee Create(Employee employee);
+        Employee Replace(Employee originalEmployee, Employee newEmployee);
+    }
     public class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeRepository _employeeRepository;
