@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CodeChallenge.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.EntityFrameworkCore;
 using CodeChallenge.Data;
 
 namespace CodeChallenge.Repositories
@@ -18,35 +16,35 @@ namespace CodeChallenge.Repositories
     }
     public class EmployeeRespository : IEmployeeRepository
     {
-        private readonly EmployeeContext _employeeContext;
+        private readonly EmployeeInfoContext _EmployeeInfoContext;
         private readonly ILogger<IEmployeeRepository> _logger;
 
-        public EmployeeRespository(ILogger<IEmployeeRepository> logger, EmployeeContext employeeContext)
+        public EmployeeRespository(ILogger<IEmployeeRepository> logger, EmployeeInfoContext EmployeeInfoContext)
         {
-            _employeeContext = employeeContext;
+            _EmployeeInfoContext = EmployeeInfoContext;
             _logger = logger;
         }
 
         public Employee Add(Employee employee)
         {
             employee.EmployeeId = Guid.NewGuid().ToString();
-            _employeeContext.Employees.Add(employee);
+            _EmployeeInfoContext.Employees.Add(employee);
             return employee;
         }
 
         public Employee GetById(string id)
         {
-            return _employeeContext.Employees.SingleOrDefault(e => e.EmployeeId == id);
+            return _EmployeeInfoContext.Employees.SingleOrDefault(e => e.EmployeeId == id);
         }
 
         public Task SaveAsync()
         {
-            return _employeeContext.SaveChangesAsync();
+            return _EmployeeInfoContext.SaveChangesAsync();
         }
 
         public Employee Remove(Employee employee)
         {
-            return _employeeContext.Remove(employee).Entity;
+            return _EmployeeInfoContext.Remove(employee).Entity;
         }
     }
 }

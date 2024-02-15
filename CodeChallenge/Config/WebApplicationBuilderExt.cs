@@ -8,12 +8,11 @@ namespace CodeChallenge.Config
 {
     public static class WebApplicationBuilderExt
     {
-        private static readonly string DB_NAME = "EmployeeInfoDB";
         public static void UseEmployeeInfoDB(this WebApplicationBuilder builder)
         {
-            builder.Services.AddDbContext<EmployeeContext>(options =>
+            builder.Services.AddDbContext<EmployeeInfoContext>(options =>
             {
-                options.UseInMemoryDatabase(DB_NAME);
+                options.UseInMemoryDatabase(EmployeeInfoContext.EMPLOYEE_INFO_DB_NAME);
             });
         }
     }

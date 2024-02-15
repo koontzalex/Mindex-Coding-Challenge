@@ -51,8 +51,8 @@ namespace CodeChallenge.Config
         private void SeedEmployeeInfoDB()
         {
             new EmployeeDataSeeder(
-                new EmployeeContext(
-                    new DbContextOptionsBuilder<EmployeeContext>().UseInMemoryDatabase("EmployeeInfoDB").Options
+                new EmployeeInfoContext(
+                    new DbContextOptionsBuilder<EmployeeInfoContext>().UseInMemoryDatabase(EmployeeInfoContext.EMPLOYEE_INFO_DB_NAME).Options
             )).Seed().Wait();
         }
     }

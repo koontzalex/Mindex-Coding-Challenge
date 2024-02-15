@@ -10,22 +10,22 @@ namespace CodeChallenge.Data
 {
     public class EmployeeDataSeeder
     {
-        private EmployeeContext _employeeContext;
+        private EmployeeInfoContext _EmployeeInfoContext;
         private const String EMPLOYEE_SEED_DATA_FILE = "resources/EmployeeSeedData.json";
 
-        public EmployeeDataSeeder(EmployeeContext employeeContext)
+        public EmployeeDataSeeder(EmployeeInfoContext EmployeeInfoContext)
         {
-            _employeeContext = employeeContext;
+            _EmployeeInfoContext = EmployeeInfoContext;
         }
 
         public async Task Seed()
         {
-            if(!_employeeContext.Employees.Any())
+            if(!_EmployeeInfoContext.Employees.Any())
             {
                 List<Employee> employees = LoadEmployees();
-                _employeeContext.Employees.AddRange(employees);
+                _EmployeeInfoContext.Employees.AddRange(employees);
 
-                await _employeeContext.SaveChangesAsync();
+                await _EmployeeInfoContext.SaveChangesAsync();
             }
         }
 
