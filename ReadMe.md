@@ -1,15 +1,15 @@
 # Mindex Coding Challenge
-## What's Provided
+## The Project
 A simple [.Net 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0) web application has been created and bootstrapped 
 with data. The application contains information about all employees at a company. On application start-up, an in-memory 
 database is bootstrapped with a serialized snapshot of the database. While the application runs, the data may be
 accessed and mutated in the database without impacting the snapshot.
 
-### How to Run
 You can run this by executing `dotnet run` on the command line or in [Visual Studio Community Edition](https://www.visualstudio.com/downloads/).
 
 
-### How to Use
+## How to Use
+### Employee Datatype
 The following endpoints are available to use:
 ```
 * CREATE
@@ -56,9 +56,48 @@ The Employee has a JSON schema of:
 ```
 For all endpoints that require an "id" in the URL, this is the "employeeId" field.
 
-## What to Implement
-Clone or download the repository, do not fork it.
+### Compensation Datatype
+The following endpoints are available to use:
+```
+* CREATE
+    * HTTP Method: POST 
+    * URL: localhost:8080/api/compensation
+    * PAYLOAD: Compensation
+    * RESPONSE: Compensation
+* READ
+    * HTTP Method: GET 
+    * URL: localhost:8080/api/compensation/{id}
+    * RESPONSE: Compensation
+* UPDATE
+    * HTTP Method: PUT 
+    * URL: localhost:8080/api/compensation/{id}
+    * PAYLOAD: Compensation
+    * RESPONSE: Compensation
+```
+The Compensation has a JSON schema of:
+```json
+{
+  "type":"Compensation",
+  "properties": {
+    "CompensationId": {
+      "type": "string"
+    },
+    "Employee": {
+      "type": "string"
+    },
+    "Salary": {
+          "type": "double"
+    },
+    "EffectiveDate": {
+          "type": "DateTime"
+    }
+  }
+}
+```
+For all endpoints that require an "id" in the URL, this is the "CompensationId" field.
+The Employee field is the id of an Employee object. This is required and unique for every Compensation.
 
+## Remaining Work
 ### Task 1
 Create a new type, ReportingStructure, that has two properties: employee and numberOfReports.
 
@@ -78,10 +117,6 @@ This new type should have a new REST endpoint created for it. This new endpoint 
 the fully filled out ReportingStructure for the specified employeeId. The values should be computed on the fly and will 
 not be persisted.
 
-### Task 2
-Create a new type, Compensation. A Compensation has the following fields: employee, salary, and effectiveDate. Create 
-two new Compensation REST endpoints. One to create and one to read by employeeId. These should persist and query the 
-Compensation from the persistence layer.
 
-## Delivery
+### Delivery
 Please upload your results to a publicly accessible Git repo. Free ones are provided by Github and Bitbucket.

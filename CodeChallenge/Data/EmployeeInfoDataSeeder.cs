@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace CodeChallenge.Data
 {
-    public class EmployeeDataSeeder
+    public class EmployeeInfoDataSeeder
     {
         private EmployeeInfoContext _EmployeeInfoContext;
         private const String EMPLOYEE_SEED_DATA_FILE = "resources/EmployeeSeedData.json";
+        private const String COMPENSATION_SEED_DATA_FILE = "resources/CompensationSeedData.json";
 
-        public EmployeeDataSeeder(EmployeeInfoContext EmployeeInfoContext)
+        public EmployeeInfoDataSeeder(EmployeeInfoContext EmployeeInfoContext)
         {
             _EmployeeInfoContext = EmployeeInfoContext;
         }
@@ -24,6 +25,13 @@ namespace CodeChallenge.Data
             {
                 List<Employee> employees = LoadEmployees();
                 _EmployeeInfoContext.Employees.AddRange(employees);
+
+                await _EmployeeInfoContext.SaveChangesAsync();
+            }
+            if(!_EmployeeInfoContext.Compensations.Any())
+            {
+                List<Compensation> compensations = LoadCompensations();
+                _EmployeeInfoContext.Compensations.AddRange(compensations);
 
                 await _EmployeeInfoContext.SaveChangesAsync();
             }
@@ -38,13 +46,28 @@ namespace CodeChallenge.Data
                 JsonSerializer serializer = new JsonSerializer();
 
                 List<Employee> employees = serializer.Deserialize<List<Employee>>(jr);
-                FixUpReferences(employees);
+                FixUpEmployeeReferences(employees);
 
                 return employees;
             }
         }
 
-        private void FixUpReferences(List<Employee> employees)
+        private List<Compensation> LoadCompensations()
+        {
+            using (FileStream fs = new FileStream(COMPENSATION_SEED_DATA_FILE, FileMode.Open))
+            using (StreamReader sr = new StreamReader(fs))
+            using (JsonReader jr = new JsonTextReader(sr))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+
+                List<Compensation> compensations = serializer.Deserialize<List<Compensation>>(jr);
+                FixUpCompensationReferences(compensations);
+
+                return compensations;
+            }
+        }
+
+        private void FixUpEmployeeReferences(List<Employee> employees)
         {
             var employeeIdRefMap = from employee in employees
                                 select new { Id = employee.EmployeeId, EmployeeRef = employee };
@@ -63,6 +86,14 @@ namespace CodeChallenge.Data
                     employee.DirectReports = referencedEmployees;
                 }
             });
+        }
+
+
+        // Remove any compensation entities that don't reference a valid employee, IE null id or nonexistant entry
+        private void FixUpCompensationReferences(List<Compensation> compensations)
+        {
+            compensations.RemoveAll( compensation => compensation.Employee == null);
+            compensations.RemoveAll( compensation => !(_EmployeeInfoContext.Employees.Select(employee => employee.EmployeeId)).Contains(compensation.Employee));
         }
     }
 }
