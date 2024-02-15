@@ -19,7 +19,7 @@ namespace CodeChallenge.Config
 
             var builder = WebApplication.CreateBuilder(args);
 
-            builder.UseEmployeeDB();
+            builder.UseEmployeeInfoDB();
             
             AddServices(builder.Services);
 
@@ -29,7 +29,7 @@ namespace CodeChallenge.Config
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                SeedEmployeeDB();
+                SeedEmployeeInfoDB();
             }
 
             app.UseAuthorization();
@@ -48,11 +48,11 @@ namespace CodeChallenge.Config
             services.AddControllers();
         }
 
-        private void SeedEmployeeDB()
+        private void SeedEmployeeInfoDB()
         {
             new EmployeeDataSeeder(
                 new EmployeeContext(
-                    new DbContextOptionsBuilder<EmployeeContext>().UseInMemoryDatabase("EmployeeDB").Options
+                    new DbContextOptionsBuilder<EmployeeContext>().UseInMemoryDatabase("EmployeeInfoDB").Options
             )).Seed().Wait();
         }
     }
