@@ -173,9 +173,9 @@ The output for an Employee's ReportingStructure will look as follow"
 }
 ```
 
+## Future Concerns
 
-##Future Concerns
-###Testing
+### Testing
 
 Currently, testing creates an initial Context during a test suite, and does not
 reset this for the duration of the tests. This can cause instability for future
