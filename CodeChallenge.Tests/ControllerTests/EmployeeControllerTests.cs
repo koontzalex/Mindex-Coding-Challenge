@@ -2,15 +2,13 @@
 using System.Net;
 using System.Net.Http;
 using System.Text;
-
 using CodeChallenge.Models;
-
-using CodeCodeChallenge.Tests.Integration.Extensions;
-using CodeCodeChallenge.Tests.Integration.Helpers;
+using CodeChallenge.Tests.Integration.Extensions;
+using CodeChallenge.Tests.Integration.Helpers;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace CodeCodeChallenge.Tests.Integration
+namespace CodeChallenge.Tests.Integration
 {
     [TestClass]
     public class EmployeeControllerTests
@@ -78,9 +76,24 @@ namespace CodeCodeChallenge.Tests.Integration
 
             // Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+            
             var employee = response.DeserializeContent<Employee>();
             Assert.AreEqual(expectedFirstName, employee.FirstName);
             Assert.AreEqual(expectedLastName, employee.LastName);
+        }
+
+        [TestMethod]
+        public void GetEmployeeById_Returns_NotFound()
+        {
+            // Arrange
+            var employeeId = "Invalid Id";
+
+            // Execute
+            var getRequestTask = _httpClient.GetAsync($"api/employee/{employeeId}");
+            var response = getRequestTask.Result;
+
+            // Assert
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
         }
 
         [TestMethod]
@@ -89,11 +102,11 @@ namespace CodeCodeChallenge.Tests.Integration
             // Arrange
             var employee = new Employee()
             {
-                EmployeeId = "03aa1462-ffa9-4978-901b-7c001562cf6f",
-                Department = "Engineering",
-                FirstName = "Pete",
-                LastName = "Best",
-                Position = "Developer VI",
+                EmployeeId = "c0c2293d-16bd-4603-8e08-638a9d18b22e",
+                Department = "Archeology",
+                FirstName = "Indiana",
+                LastName = "Jones",
+                Position = "Treasure Hunter",
             };
             var requestContent = new JsonSerialization().ToJson(employee);
 

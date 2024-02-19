@@ -19,10 +19,15 @@ namespace CodeChallenge.Controllers
             _compensationService = compensationService;
         }
 
+/// <summary>
+/// Creates a new Compensation entity, based on the payload in the body.
+/// The employee id must reference a valid employee.
+/// There must not be a preexisting compensation for the employee.
+/// </summary>
         [HttpPost]
         public IActionResult CreateCompensation([FromBody] Compensation compensation)
         {
-            _logger.LogDebug($"Received compensation create request for '{compensation.Employee} {compensation.Salary}'");
+            _logger.LogDebug($"Received compensation create request for '{compensation.Employee.EmployeeId} {compensation.Salary}'");
 
             try
             {
@@ -30,13 +35,17 @@ namespace CodeChallenge.Controllers
             }
             catch (NotSupportedException ex)
             {
-                _logger.LogError($"Invalid employee id for compensation request '{compensation.Employee} {compensation.Salary}'");
-                return UnprocessableEntity();
+                _logger.LogError(ex, $"Invalid Compensation Create Request");
+                return UnprocessableEntity(compensation);
             }
 
             return CreatedAtRoute("getCompensationById", new { id = compensation.CompensationId }, compensation);
         }
 
+/// <summary>
+/// Returns the compensation based on the id.
+/// Returns a 404 if no compensation with that id exists.
+/// </summary>
         [HttpGet("{id}", Name = "getCompensationById")]
         public IActionResult GetCompensationById(String id)
         {
@@ -45,11 +54,17 @@ namespace CodeChallenge.Controllers
             var compensation = _compensationService.GetById(id);
 
             if (compensation == null)
-                return NotFound();
+                return NotFound(id);
 
             return Ok(compensation);
         }
 
+/// <summary>
+/// Replaces the attributes of the Compensation which has the provided id.
+/// The new attributes are from the body of the request.
+/// This does not change the id of the Compensation.
+/// The employee id may be changed, but must still remain valid and unique for all compensations.
+/// </summary>
         [HttpPut("{id}")]
         public IActionResult ReplaceCompensation(String id, [FromBody]Compensation newCompensation)
         {
@@ -57,7 +72,7 @@ namespace CodeChallenge.Controllers
 
             var existingCompensation = _compensationService.GetById(id);
             if (existingCompensation == null)
-                return NotFound();
+                return NotFound(id);
 
             try
             {
@@ -66,8 +81,8 @@ namespace CodeChallenge.Controllers
             }
             catch (NotSupportedException ex)
             {
-                _logger.LogError($"Invalid employee id for compensation request '{id}'");
-                return UnprocessableEntity();
+                _logger.LogError(ex, $"Invalid Compensation Update Request");
+                return UnprocessableEntity(newCompensation);
             }
 
             return Ok(newCompensation);

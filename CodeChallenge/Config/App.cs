@@ -48,6 +48,8 @@ namespace CodeChallenge.Config
             services.AddScoped<ICompensationService, CompensationService>();
             services.AddScoped<ICompensationRepository, CompensationRepository>();
 
+            services.AddScoped<IReportingStructureService, ReportingStructureService>();
+
             services.AddControllers();
         }
 

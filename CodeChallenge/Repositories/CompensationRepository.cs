@@ -11,6 +11,7 @@ namespace CodeChallenge.Repositories
     public interface ICompensationRepository
     {
         Compensation GetById(String id);
+        Compensation GetByEmployeeId(string employeeId);
         Compensation Add(Compensation compensation);
         Compensation Remove(Compensation compensation);
         Task SaveAsync();
@@ -29,10 +30,7 @@ namespace CodeChallenge.Repositories
         public Compensation Add(Compensation compensation)
         {
             compensation.CompensationId = Guid.NewGuid().ToString();
-            if(_EmployeeInfoContext.Compensations.FirstOrDefault(savedCompensation => savedCompensation.Employee == compensation.Employee) != null)
-            {
-                throw new NotSupportedException($"Compensation for employee {compensation.Employee} already exists");
-            }
+
             _EmployeeInfoContext.Compensations.Add(compensation);
             return compensation;
         }
@@ -40,6 +38,11 @@ namespace CodeChallenge.Repositories
         public Compensation GetById(string id)
         {
             return _EmployeeInfoContext.Compensations.SingleOrDefault(e => e.CompensationId == id);
+        }
+
+        public Compensation GetByEmployeeId(string employeeId)
+        {
+            return _EmployeeInfoContext.Compensations.FirstOrDefault(compensation => compensation.Employee.EmployeeId == employeeId);
         }
 
         public Compensation Remove(Compensation compensation)

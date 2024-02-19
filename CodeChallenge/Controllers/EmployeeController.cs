@@ -19,6 +19,10 @@ namespace CodeChallenge.Controllers
             _employeeService = employeeService;
         }
 
+/// <summary>
+/// Create an employee from the body of the request.
+/// ID is assigned on creation and should not be supplied.
+/// </summary>
         [HttpPost]
         public IActionResult CreateEmployee([FromBody] Employee employee)
         {
@@ -29,6 +33,10 @@ namespace CodeChallenge.Controllers
             return CreatedAtRoute("getEmployeeById", new { id = employee.EmployeeId }, employee);
         }
 
+/// <summary>
+/// Returns the employee based on the id.
+/// Returns a 404 if no employee with that id exists.
+/// </summary>
         [HttpGet("{id}", Name = "getEmployeeById")]
         public IActionResult GetEmployeeById(String id)
         {
@@ -37,11 +45,16 @@ namespace CodeChallenge.Controllers
             var employee = _employeeService.GetById(id);
 
             if (employee == null)
-                return NotFound();
+                return NotFound(id);
 
             return Ok(employee);
         }
 
+/// <summary>
+/// Replaces the attributes of the employee which has the provided id.
+/// The new attributes are from the body of the request.
+/// This does not change the id of the employee.
+/// </summary>
         [HttpPut("{id}")]
         public IActionResult ReplaceEmployee(String id, [FromBody]Employee newEmployee)
         {
@@ -49,7 +62,7 @@ namespace CodeChallenge.Controllers
 
             var existingEmployee = _employeeService.GetById(id);
             if (existingEmployee == null)
-                return NotFound();
+                return NotFound(id);
 
             _employeeService.Replace(existingEmployee, newEmployee);
 

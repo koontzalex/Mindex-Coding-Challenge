@@ -22,6 +22,9 @@ namespace CodeChallenge.Services
             _logger = logger;
         }
 
+/// <summary>
+/// Saves a new Employee entity to the database.
+/// </summary>
         public Employee Create(Employee employee)
         {
             if(employee != null)
@@ -33,6 +36,9 @@ namespace CodeChallenge.Services
             return employee;
         }
 
+/// <summary>
+/// Returns an employee if the matching id, if one exists.
+/// </summary>
         public Employee GetById(string id)
         {
             if(!String.IsNullOrEmpty(id))
@@ -43,6 +49,10 @@ namespace CodeChallenge.Services
             return null;
         }
 
+/// <summary>
+/// Replaces the details of originalEmployee with the supplied details of newEmployee.
+/// Does not replace the ID.
+/// </summary>
         public Employee Replace(Employee originalEmployee, Employee newEmployee)
         {
             if(originalEmployee != null)

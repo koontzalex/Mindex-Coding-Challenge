@@ -19,27 +19,41 @@ namespace CodeChallenge.Data
             _EmployeeInfoContext = EmployeeInfoContext;
         }
 
+/// <summary>
+/// Seed the databse by reading from the associated JSON files.
+/// The ReportingStructure entities are generated from the Employee seed data.
+/// </summary>
         public async Task Seed()
         {
             if(!_EmployeeInfoContext.Employees.Any())
             {
-                List<Employee> employees = LoadEmployees();
+                Console.WriteLine($"Loading employees from {EMPLOYEE_SEED_DATA_FILE}...");
+                List<Employee> employees = LoadEmployees(EMPLOYEE_SEED_DATA_FILE);
+                Console.WriteLine($"Saving employees...");
                 _EmployeeInfoContext.Employees.AddRange(employees);
 
                 await _EmployeeInfoContext.SaveChangesAsync();
+
+                Console.WriteLine($"Employees saved");
             }
             if(!_EmployeeInfoContext.Compensations.Any())
             {
-                List<Compensation> compensations = LoadCompensations();
+                Console.WriteLine($"Loading compensations from {COMPENSATION_SEED_DATA_FILE}...");
+                List<Compensation> compensations = LoadCompensations(COMPENSATION_SEED_DATA_FILE, _EmployeeInfoContext.Employees.ToList());
+                Console.WriteLine($"Saving compensations...");
                 _EmployeeInfoContext.Compensations.AddRange(compensations);
 
                 await _EmployeeInfoContext.SaveChangesAsync();
+                Console.WriteLine($"Compensations saved");
             }
         }
 
-        private List<Employee> LoadEmployees()
+/// <summary>
+/// Reads from the Employee seed file and converts it to a list of Employees.
+/// </summary>
+        private List<Employee> LoadEmployees(string seedFile)
         {
-            using (FileStream fs = new FileStream(EMPLOYEE_SEED_DATA_FILE, FileMode.Open))
+            using (FileStream fs = new FileStream(seedFile, FileMode.Open))
             using (StreamReader sr = new StreamReader(fs))
             using (JsonReader jr = new JsonTextReader(sr))
             {
@@ -52,21 +66,28 @@ namespace CodeChallenge.Data
             }
         }
 
-        private List<Compensation> LoadCompensations()
+/// <summary>
+/// Reads from the Employee seed file and converts it to a list of Compensations.
+/// </summary>
+        private List<Compensation> LoadCompensations(string seedFile, List<Employee> employees)
         {
-            using (FileStream fs = new FileStream(COMPENSATION_SEED_DATA_FILE, FileMode.Open))
+            using (FileStream fs = new FileStream(seedFile, FileMode.Open))
             using (StreamReader sr = new StreamReader(fs))
             using (JsonReader jr = new JsonTextReader(sr))
             {
                 JsonSerializer serializer = new JsonSerializer();
 
                 List<Compensation> compensations = serializer.Deserialize<List<Compensation>>(jr);
-                FixUpCompensationReferences(compensations);
+                FixUpCompensationReferences(compensations, employees);
 
                 return compensations;
             }
         }
 
+        /// <summary>
+        /// Fills in the referenced employees that are currently just an id.
+        /// This matches the given id of a DirectReport, and replaces it with the full Employee entity.
+        /// </summary>
         private void FixUpEmployeeReferences(List<Employee> employees)
         {
             var employeeIdRefMap = from employee in employees
@@ -88,12 +109,16 @@ namespace CodeChallenge.Data
             });
         }
 
-
-        // Remove any compensation entities that don't reference a valid employee, IE null id or nonexistant entry
-        private void FixUpCompensationReferences(List<Compensation> compensations)
+/// <summary>
+/// Fills in the referenced employees that are currently just an id.
+/// This matches on the employeeid of a compensation, and replaceds it with a full Employee entity.
+/// </summary>
+        private void FixUpCompensationReferences(List<Compensation> compensations, List<Employee> employees)
         {
-            compensations.RemoveAll( compensation => compensation.Employee == null);
-            compensations.RemoveAll( compensation => !(_EmployeeInfoContext.Employees.Select(employee => employee.EmployeeId)).Contains(compensation.Employee));
+            foreach(Compensation compensation in compensations)
+            {
+                compensation.Employee = employees.First(e => e.EmployeeId == compensation.Employee.EmployeeId);
+            }
         }
     }
 }

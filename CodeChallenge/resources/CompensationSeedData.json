@@ -1,7 +1,10 @@
 ﻿[
   {
     "compensationId": "84e80f79-6328-4f44-afbb-2ffbda969b1c",
-    "employee": "16a596ae-edd3-4847-99fe-c4518e82c86f",
+    "employee": 
+    {
+      "employeeId": "16a596ae-edd3-4847-99fe-c4518e82c86f"
+    },
     "salary": 500.5,
     "effectivedate": "2024-02-15"
   }
